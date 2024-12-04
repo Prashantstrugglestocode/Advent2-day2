@@ -1,37 +1,53 @@
-# Open the file
-with open("text.txt", "r") as file1:
-    text = file1.readlines()
+import re
+
+# Patterns
+pattern = re.compile(r"do\(\)|don't\(\)|mul\([0-9]+,[0-9]+\)")
+pattern2 = re.compile(r"mul\([0-9]+,[0-9]+\)")
+pattern3 = re.compile(r"[0-9]+")
+
 
 list1 = []
+list2 = []
+list3 = []
 
-for line in text:  # Start line numbers from 1
-    line = line.strip()  # Remove leading and trailing whitespace
-    if not line:  # Skip empty lines
-        continue
-    dump = list(map(int, line.split(" ")))  # Convert to integers
-    list1.append(dump)
 
-def is_safe(element):
+def read_all_muls(textFile: str):
+    for i, line in enumerate(open(textFile)):
+        for match in re.findall(pattern, line):
+            list1.append(match)
+read_all_muls("text.txt")
+print("List1:", list1)
 
-    diffs = [element[i + 1] - element[i] for i in range(len(element)-1)]
 
-    if all(1 <= diff <= 3 for diff in diffs):
-        return True
-    if all(-3 <= diff <= -1 for diff in diffs):
-        return True
-    return False
+def read_the_numbers(list1):
+    state = True
+    for i, item in enumerate(list1):
+        print(i, item)
+        if 'do()' in item:
+            state = True
+        elif "don't()" in item:
+            state = False
 
-def is_safe_with_one_removal(element):
-    for i in range(len(element)):
-        modified_element = element[:i] + element[i + 1:]
-        if is_safe(modified_element):
-            return True
-    return False
+        if state:
+            for match in re.findall(pattern2, item):
+                list2.insert(i, match)
+    return list2
 
-# Iterate through each element
-safe_count = 0
-for element in list1:
-    if is_safe(element) or is_safe_with_one_removal(element):
-        safe_count += 1
+read_the_numbers(list1)
+print("List2:", list2)
 
-print("Number of safe elements:", safe_count)
+
+def change_numbers_to_int(list2):
+    for item in list2:
+        for match in re.findall(pattern3, item):
+            list3.append(int(match))
+
+change_numbers_to_int(list2)
+print("List3:", list3)
+
+
+value = 0
+for i in range(0, len(list3) - 1, 2):
+    value += list3[i] * list3[i + 1]
+
+print("Value:", value)
